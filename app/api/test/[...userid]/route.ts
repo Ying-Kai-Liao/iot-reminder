@@ -1,14 +1,21 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextRequest, NextResponse } from 'next/server';
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { userid } = req.query;
+interface IParams {
+  userid?: string;
+}
+
+export async function GET(
+  request: Request,
+  { params }: { params: IParams }
+) {
+  const { userid } = params;
   const userId = Array.isArray(userid) ? userid[0] : userid;
   if (!userId || typeof userId !== 'string') {
     throw new Error('Invalid ID');
   }
   const userData = getUserData(userId);
 
-  res.status(200).json({ data: userData });
+  return NextResponse.json({ data: userData });
 }
 
 function getUserData(userid: string) {
