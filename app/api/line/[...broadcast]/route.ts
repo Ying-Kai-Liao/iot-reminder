@@ -97,6 +97,7 @@ export async function GET(
 
     const res = await fetch('https://api.line.me/v2/bot/message/broadcast', {
         method: 'POST',
+        cache: 'no-cache',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${process.env.LINE_CHANNEL_ACCESS_TOKEN}`
