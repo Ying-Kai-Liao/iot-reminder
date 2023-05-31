@@ -94,7 +94,6 @@ export async function POST(
           }
         ]
     });
-    console.log(data);
 
     const res = await fetch('https://api.line.me/v2/bot/message/broadcast', {
         method: 'POST',
@@ -108,5 +107,6 @@ export async function POST(
       .then(response => response.json())
       .catch(error => console.log('error', error));
 
-    return NextResponse.json(res);
+    return NextResponse
+      .json(res);
 }

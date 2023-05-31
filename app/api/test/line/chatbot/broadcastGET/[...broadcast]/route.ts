@@ -94,7 +94,6 @@ export async function GET(
           }
         ]
     });
-    console.log(data);
 
     const res = await fetch('https://api.line.me/v2/bot/message/broadcast', {
         method: 'POST',
