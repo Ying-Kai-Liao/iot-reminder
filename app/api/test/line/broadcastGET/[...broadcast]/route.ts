@@ -15,7 +15,7 @@ export async function GET(
         "messages": [
           {
             "type": "flex",
-            "altText": "OverTest",
+            "altText": "broadcastGetTest",
             "contents": 
               {
                   "type": "bubble",
