@@ -5,6 +5,6 @@ export async function GET(
 ) {
     return NextResponse.json({
         status: 'ok',
-        message: 'Conneted Sucessfully!'
+        message: 'Connected Sucessfully!'
     })
 }
