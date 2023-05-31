@@ -7,6 +7,7 @@ import {
   TextMessage,
   MessageAPIResponseBase,
 } from "@line/bot-sdk";
+import gptConverter from "@/utils/chatGPT";
 import { NextApiRequest, NextApiResponse } from "next";
 
 const clientConfig: ClientConfig = {
@@ -34,10 +35,13 @@ const textEventHandler = async (
   const { replyToken } = event;
   const { text } = event.message;
 
+  // Process the text.
+  const chatGptResponse = await gptConverter(text);
+
   // Create a new message.
   const response: TextMessage = {
     type: "text",
-    text,
+    text: chatGptResponse.time,
   };
 
   // Reply to the user.
