@@ -10,6 +10,17 @@ import {
 import gptConverter from "@/utils/chatGPT";
 import { NextApiRequest, NextApiResponse } from "next";
 
+interface Incident {
+  time: string;
+  incident: string;
+  objects: string[];
+}
+
+interface Error {
+  type: string;
+  msg: string;
+}
+
 const clientConfig: ClientConfig = {
   channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN || "",
   channelSecret: process.env.LINE_CHANNEL_SECRET,
@@ -37,11 +48,12 @@ const textEventHandler = async (
 
   // Process the text.
   const chatGptResponse = await gptConverter(text);
+  const reply = (chatGptResponse == undefined) || (chatGptResponse?.status == '400') ? "Sorry, I can't understand you." :  chatGptResponse;
 
   // Create a new message.
   const response: TextMessage = {
     type: "text",
-    text: chatGptResponse.time,
+    text: reply,
   };
 
   // Reply to the user.
