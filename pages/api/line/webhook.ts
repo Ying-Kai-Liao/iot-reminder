@@ -76,7 +76,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       } else {
         return res.status(200).json({
           status: "success",
-          content: "empty events",
         });
       }
       })
@@ -87,7 +86,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       });
     }
   } else {
-    return res.status(405).json({ message: "Method Not Allowed" });
+    return res.status(405);
   }
 };
 
