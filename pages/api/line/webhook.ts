@@ -10,17 +10,6 @@ import {
 import gptConverter from "@/utils/chatGPT";
 import { NextApiRequest, NextApiResponse } from "next";
 
-interface Incident {
-  time: string;
-  incident: string;
-  objects: string[];
-}
-
-interface Error {
-  type: string;
-  msg: string;
-}
-
 const clientConfig: ClientConfig = {
   channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN || "",
   channelSecret: process.env.LINE_CHANNEL_SECRET,
