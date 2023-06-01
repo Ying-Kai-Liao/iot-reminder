@@ -5,6 +5,11 @@ export async function GET(
     request: Request,
 ) {
     const aiResponse = await gptConverter('I am going to have quiz 6/4 morning');
-
+    
+    if(aiResponse.length === 0) {
+        return NextResponse.json({
+            message: "No response"
+        })
+    }
     return NextResponse.json(aiResponse)
 }
