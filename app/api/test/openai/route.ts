@@ -6,7 +6,7 @@ export async function GET(
 ) {
     const aiResponse = await gptConverter('I am going to have quiz 6/4 morning');
     
-    if(aiResponse.length === 0) {
+    if(aiResponse.length == undefined) {
         return NextResponse.json({
             message: "No response"
         })
