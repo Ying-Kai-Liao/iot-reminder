@@ -95,6 +95,14 @@ const gptConverter = async (input:string) => {
     const raw = await chatGPT(JSON_PROMPT, input);
     const data = raw.data.choices[0].message?.content;
     const sanitizedData = data?.trim().replaceAll('\n', '').replaceAll('\\', '');
+    if (sanitizedData !== undefined) {
+        try {
+            JSON.parse(sanitizedData);
+        } catch {
+            return undefined;
+        }
+    }
+    
     const objectizedData = sanitizedData == undefined ? sanitizedData : JSON.parse(sanitizedData);
 
     console.log(objectizedData);
