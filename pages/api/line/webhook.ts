@@ -37,7 +37,10 @@ const textEventHandler = async (
 
   // Process the text.
   const chatGptResponse = await gptConverter(text);
-  const reply = (chatGptResponse == undefined) || (chatGptResponse?.status == '400') ? "Sorry, I can't understand you." :  chatGptResponse;
+  const reply = 
+  (chatGptResponse == undefined) || (chatGptResponse?.status == '400') 
+  ? "Sorry, I can't understand you." 
+  :  JSON.stringify(chatGptResponse); // Cannot use object or JSON here, it would cause error when sending to line api
 
   // Create a new message.
   const response: TextMessage = {
