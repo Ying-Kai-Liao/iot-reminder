@@ -9,6 +9,7 @@ import {
 } from "@line/bot-sdk";
 import gptConverter from "@/utils/chatGPT";
 import { NextApiRequest, NextApiResponse } from "next";
+import axios from "axios";
 
 const clientConfig: ClientConfig = {
   channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN || "",
@@ -36,12 +37,31 @@ const textEventHandler = async (
   const { text } = event.message;
 
   // Process the text.
-  const chatGptResponse = await gptConverter(text);
-  const reply = 
-  (chatGptResponse == undefined) || (chatGptResponse?.status == '400') 
-  ? "Sorry, I can't understand you." 
-  :  JSON.stringify(chatGptResponse); // Cannot use object or JSON here, it would cause error when sending to line api
+  let reply = '';
 
+  if (text.startsWith('/')) {
+    const [command, ...args] = text.slice(1).split(' ');
+    switch (command) {
+      case 'register':
+        const data = {
+          email: args[0],
+          name: args[1],
+          password: args[2]
+        }
+        console.log(data)
+        // axios.post('/api/user/register', data)
+        //   .then(res => reply = JSON.stringify(res.data))
+        //   .catch(err => reply = JSON.stringify(err.response.data))
+        break;
+    }
+  } else {
+    const chatGptResponse = await gptConverter(text);
+    reply = 
+      (chatGptResponse == undefined) || (chatGptResponse?.status == '400') 
+      ? "Sorry, I can't understand you." 
+      :  JSON.stringify(chatGptResponse); // Cannot use object or JSON here, it would cause error when sending to line api
+  }
+  
   // Create a new message.
   const response: TextMessage = {
     type: "text",
