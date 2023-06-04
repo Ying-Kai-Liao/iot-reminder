@@ -49,6 +49,7 @@ const textEventHandler = async (
           password: args[2]
         }
         
+        // Send the data to register api
         await axios.post('/api/user/register', data)
           .then(res => reply = JSON.stringify(res.data))
           .catch(err => reply = JSON.stringify(err.data))
@@ -56,6 +57,8 @@ const textEventHandler = async (
         if (reply == undefined) {
           reply = 'Error'
         }
+
+        reply = JSON.stringify(data);
 
         break;
     }
