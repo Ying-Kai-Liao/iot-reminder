@@ -49,7 +49,7 @@ const textEventHandler = async (
           password: args[2]
         }
         
-        await axios.post('https://localhost:443/api/user/register', data)
+        await axios.post('/api/user/register', data)
           .then(res => reply = JSON.stringify(res.data))
           .catch(err => reply = JSON.stringify(err.data))
         
