@@ -8,6 +8,7 @@ import {
   MessageAPIResponseBase,
 } from "@line/bot-sdk";
 import gptConverter from "@/utils/chatGPT";
+import { register } from "@/app/api/user/register";
 import { NextApiRequest, NextApiResponse } from "next";
 import axios from "axios";
 
@@ -48,11 +49,8 @@ const textEventHandler = async (
           name: args[1],
           password: args[2]
         }
-        
         // Send the data to register api
-        await axios.post('https://127.0.0.1/api/user/register', data)
-          .then(res => reply = JSON.stringify(res.data))
-          .catch(err => reply = JSON.stringify(err.data))
+        reply = JSON.stringify(await register(undefined, data));
         
         if (reply == undefined) {
           reply = 'Error'

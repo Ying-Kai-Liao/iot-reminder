@@ -18,7 +18,7 @@ export async function POST(
           password: args[2]
         }
         console.log(data)
-        await axios.post('http://localhost:3000/api/user/register', data)
+        await axios.post('/api/userPage/register', data)
           .then(res => reply = JSON.stringify(res.data))
           .catch(err => reply = JSON.stringify(err.data))
         
