@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import axios from "axios";
+import { register } from "../../user/register";
 
 export async function POST(
     request: Request,
@@ -17,10 +17,9 @@ export async function POST(
           name: args[1],
           password: args[2]
         }
-        console.log(data)
-        await axios.post('/api/userPage/register', data)
-          .then(res => reply = JSON.stringify(res.data))
-          .catch(err => reply = JSON.stringify(err.data))
+        const registerResponse = await (await register(undefined, data)).json()
+        reply = JSON.stringify(registerResponse)
+        console.log("reply = " + reply)
         
         if (reply == undefined) {
             reply = 'Error'

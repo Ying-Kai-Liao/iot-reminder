@@ -50,12 +50,16 @@ const textEventHandler = async (
           password: args[2]
         }
         // Send the data to register api
-        reply = JSON.stringify(await register(undefined, data));
-        
+        const registerResponse = await (await register(undefined, data)).json()
+        reply = JSON.stringify(registerResponse)
+
         if (reply == undefined) {
           reply = 'Error'
         }
 
+        break;
+      default:
+        reply = 'Mistake use of command';
         break;
     }
   } else {

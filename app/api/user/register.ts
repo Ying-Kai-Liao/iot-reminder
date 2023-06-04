@@ -8,8 +8,6 @@ export async function register(request?: Request, data?: any) {
     const body = (await request?.json()) || data;
     const { email, name, password } = body;
 
-    console.log(body);
-
     if (!email || !name || !password) {
       console.log("Missing fields");
       return NextResponse.json({
@@ -25,7 +23,7 @@ export async function register(request?: Request, data?: any) {
         hashedPassword,
       },
     });
-
+    console.log(user);
     return NextResponse.json(user);
   } catch (error) {
     console.log(error);
