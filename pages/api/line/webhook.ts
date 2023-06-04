@@ -58,8 +58,6 @@ const textEventHandler = async (
           reply = 'Error'
         }
 
-        reply = JSON.stringify(data);
-
         break;
     }
   } else {
