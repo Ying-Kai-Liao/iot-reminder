@@ -50,7 +50,7 @@ const textEventHandler = async (
         }
         
         // Send the data to register api
-        await axios.post('https://localhost:3000/api/user/register', data)
+        await axios.post('https://iot-reminder-git-develop-ying-kai-liao.vercel.appapi/user/register', data)
           .then(res => reply = JSON.stringify(res.data))
           .catch(err => reply = JSON.stringify(err.data))
         
