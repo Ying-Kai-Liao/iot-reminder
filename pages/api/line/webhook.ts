@@ -49,7 +49,7 @@ const textEventHandler = async (
           email: args[0],
           name: args[1],
           password: args[2],
-          lineId: userId
+          lineId: userId,
         }
         // Send the data to register api
         const registerResponse = await (await register(undefined, data)).json()
@@ -80,7 +80,18 @@ const textEventHandler = async (
         reply = JSON.stringify(chatGptResponse);
       } else {
         reply = JSON.stringify(chatGptResponse);// Cannot use object or JSON here, it would cause error when sending to line api
-        console.log(chatGptResponse?.time)
+        console.log(chatGptResponse?.time);
+        try {
+          const incident = prisma.incident.create({
+            data: {
+              userId: currentUser.id,
+              action: chatGptResponse?.incident || null,
+              time: chatGptResponse?.time || null
+            }
+          })
+        } catch (error) {
+          reply = "something wrong when crreating incident."
+        }
       }
     }
   }
