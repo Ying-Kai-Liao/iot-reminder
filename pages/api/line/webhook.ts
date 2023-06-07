@@ -71,7 +71,7 @@ const textEventHandler = async (
       }
     })
     if (!currentUser) {
-      reply = 'not registered'
+      reply = userId? userId : 'not defined';
     } else {
       const chatGptResponse = await gptConverter(text);
       if (chatGptResponse == undefined) {

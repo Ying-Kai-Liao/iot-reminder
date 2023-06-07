@@ -37,7 +37,7 @@ const JSON_PROMPT =
         Notice that DateTime is the specific type of time in prisma.
         The current DateTime is ${current}. Please answer any questions like today or next Wednesday in consider of the currrent DateTime.
         Please strictly follow the format above.
-        time is the time of the input; incident is the simple description of the mentioned event; objects is the objects that mentioned to be bring in the event.
+        time is the time of the input; incident is the simple description of the mentioned event; objects is the objects that mentioned to be bring in the event and it is optional.
         You are assisting user to tell you the data you need to form expected JSON. if user isn't giving information or not giving enough information like "I want to go shopping 5/3 or 5/5" You will output error message.
         If user is providing time like morning refers to 9:00am in default; noon refers to 12:00pm in default; afternoon refers to 3:00pm in default; evening refers to 6:00pm in default; night refers to 9:00pm in default;
         If user is missing time any of time or incident must return error. For example, when userInput is "I want to have dinner", there's no date in the information.
