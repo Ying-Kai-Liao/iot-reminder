@@ -12,5 +12,5 @@ export async function GET(
         })
     }
     console.log(aiResponse.error?.status);
-    return NextResponse.json(aiResponse)
+    return NextResponse.json(aiResponse);
 }

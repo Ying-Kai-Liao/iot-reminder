@@ -82,15 +82,15 @@ const textEventHandler = async (
         reply = JSON.stringify(chatGptResponse);// Cannot use object or JSON here, it would cause error when sending to line api
         console.log(chatGptResponse?.time);
         try {
-          const incident = prisma.incident.create({
+          const incident = await prisma.incident.create({
             data: {
               userId: currentUser.id,
               action: chatGptResponse?.incident || null,
-              time: chatGptResponse?.time || null
+              time: chatGptResponse?.time || null,
             }
           })
         } catch (error) {
-          reply = "something wrong when crreating incident."
+          reply = "something wrong when creating incident."
         }
       }
     }
