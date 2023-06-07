@@ -1,3 +1,4 @@
+import prisma from "@/app/libs/prismadb"
 import {
   ClientConfig,
   Client,
@@ -10,7 +11,6 @@ import {
 import gptConverter from "@/utils/chatGPT";
 import { register } from "@/app/api/user/register";
 import { NextApiRequest, NextApiResponse } from "next";
-import axios from "axios";
 
 const clientConfig: ClientConfig = {
   channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN || "",
@@ -36,6 +36,7 @@ const textEventHandler = async (
   // Process all message related variables here.
   const { replyToken } = event;
   const { text } = event.message;
+  const { userId } = event.source;
 
   // Process the text.
   let reply = '';
@@ -47,7 +48,8 @@ const textEventHandler = async (
         const data = {
           email: args[0],
           name: args[1],
-          password: args[2]
+          password: args[2],
+          lineId: userId
         }
         // Send the data to register api
         const registerResponse = await (await register(undefined, data)).json()
@@ -63,11 +65,24 @@ const textEventHandler = async (
         break;
     }
   } else {
-    const chatGptResponse = await gptConverter(text);
-    reply = 
-      (chatGptResponse == undefined) || (chatGptResponse?.status == '400') 
-      ? "Sorry, I can't understand you." 
-      :  JSON.stringify(chatGptResponse); // Cannot use object or JSON here, it would cause error when sending to line api
+    const currentUser = await prisma.user.findUnique({
+      where: {
+        lineId: userId,
+      }
+    })
+    if (!currentUser) {
+      reply = 'not registered'
+    } else {
+      const chatGptResponse = await gptConverter(text);
+      if (chatGptResponse == undefined) {
+        reply = "Sorry, I can't understand you.";
+      } else if (chatGptResponse?.error) {
+        reply = JSON.stringify(chatGptResponse);
+      } else {
+        reply = JSON.stringify(chatGptResponse);// Cannot use object or JSON here, it would cause error when sending to line api
+        console.log(chatGptResponse?.time)
+      }
+    }
   }
   
   // Create a new message.
