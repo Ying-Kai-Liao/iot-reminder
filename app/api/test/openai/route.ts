@@ -11,6 +11,6 @@ export async function GET(
             message: "No response"
         })
     }
-    console.log(aiResponse.error?.status)
+    console.log(aiResponse.error?.status);
     return NextResponse.json(aiResponse)
 }
