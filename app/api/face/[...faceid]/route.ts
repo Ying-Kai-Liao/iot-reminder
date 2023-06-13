@@ -30,7 +30,7 @@ export async function GET(
         console.log("userId: " + userId);
         if (userId !== ''){
             const inicidents: Incident[] = await getIncidentByUserId(userId);
-            response = inicidents.map(incident => JSON.stringify(incident)).join("\n")
+            response = inicidents.map(incident => "事件：" + JSON.stringify(incident.action) + "\n" + JSON.stringify(incident.time)).join("\n\n")
         }
     }
 
