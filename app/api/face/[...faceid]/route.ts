@@ -68,7 +68,6 @@ export async function GET(
         body: data,
         redirect: 'follow',
       })
-      .then(something => console.log(something.json()))
       .catch(error => console.log('error', error));
 
     return NextResponse.json({

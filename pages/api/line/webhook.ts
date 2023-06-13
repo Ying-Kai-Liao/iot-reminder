@@ -137,7 +137,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         events.map((event: WebhookEvent) =>
           textEventHandler(event).catch((error) => {
             console.log(error);
-            throw new Error('Text Event Handler Error' + (error));
           })
         )
       );
