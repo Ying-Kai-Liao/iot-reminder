@@ -89,7 +89,7 @@ const textEventHandler = async (
             data: {
               userId: currentUser.id,
               action: chatGptResponse?.incident || null,
-              time: chatGptResponse?.time || null,
+              time: chatGptResponse?.time?.setHours(chatGptResponse?.time?.getHours() + 8) || null,
             },
           });
           if (incident) {
