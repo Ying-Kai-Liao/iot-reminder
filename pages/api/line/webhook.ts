@@ -120,30 +120,22 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     await middleware(middlewareConfig)(req, res, async () => {
       const events: WebhookEvent[] = req.body.events;
-      if (events !== undefined) {
-        const results = await Promise.all(
-          events.map(async (event: WebhookEvent) => {
-            try {
-              await textEventHandler(event);
-            } catch (error: unknown) {
-              if (error instanceof Error) {
-                console.error(error);
-              }
-              return res.status(500).json({
-                status: "error",
-              });
-            }
-          })
-        );
-        return res.status(200).json({
-          status: "success",
-          results,
-        });
-      } else {
+      if (!events) {
         return res.status(200).json({
           status: "success",
         });
       }
+
+      const results = await Promise.all(
+        events.map((event: WebhookEvent) => textEventHandler(event).catch((error) => {
+          console.log(error);
+        }))
+      );
+
+      return res.status(200).json({
+        status: "success",
+        results,
+      });
     });
   } catch (error) {
     console.error(error);
