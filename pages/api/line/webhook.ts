@@ -114,8 +114,8 @@ const textEventHandler = async (
 };
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  if (req.method === "POST") {
-    return res.status(405);
+  if (req.method !== "POST") {
+    return res.status(405).end();
   }
   try {
     middleware(middlewareConfig)(req, res, async () => {
