@@ -118,7 +118,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(405);
   }
   try {
-    await middleware(middlewareConfig)(req, res, async () => {
+    middleware(middlewareConfig)(req, res, async () => {
       const events: WebhookEvent[] = req.body.events;
       if (!events) {
         return res.status(200).json({
