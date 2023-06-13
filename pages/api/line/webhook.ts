@@ -89,13 +89,15 @@ const textEventHandler = async (
               time: chatGptResponse?.time || null,
             },
           });
-          const response: TextMessage = {
-            type: "text",
-            text: "JSON: " + reply + "incident: " + JSON.stringify(incident),
-          };
+          if (incident) {
+            const response: TextMessage = {
+              type: "text",
+              text: "JSON: " + reply + "incident: " + JSON.stringify(incident),
+            };
 
-          // Reply to the user.
-          await client.replyMessage(replyToken, response);
+            // Reply to the user.
+            await client.replyMessage(replyToken, response);
+          }
         } catch (error) {
           reply = "something wrong when creating incident.";
         }
@@ -118,19 +120,21 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(405).end();
   }
   try {
-    middleware(middlewareConfig)(req, res, async () => {
+    await middleware(middlewareConfig)(req, res, async () => {
       const events: WebhookEvent[] = req.body.events;
       if (!events) {
         return res.status(200).json({
           status: "success",
-          text: "no events"
+          text: "no events",
         });
       }
 
       const results = await Promise.all(
-        events.map((event: WebhookEvent) => textEventHandler(event).catch((error) => {
-          console.log(error);
-        }))
+        events.map((event: WebhookEvent) =>
+          textEventHandler(event).catch((error) => {
+            console.log(error);
+          })
+        )
       );
 
       return res.status(200).json({
