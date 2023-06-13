@@ -1,4 +1,4 @@
-import prisma from "@/app/libs/prismadb"
+import prisma from "@/app/libs/prismadb";
 import {
   ClientConfig,
   Client,
@@ -18,9 +18,9 @@ const clientConfig: ClientConfig = {
 };
 
 const middlewareConfig: MiddlewareConfig = {
-    channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN,
-    channelSecret: process.env.LINE_CHANNEL_SECRET || '',
-  };
+  channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN,
+  channelSecret: process.env.LINE_CHANNEL_SECRET || "",
+};
 
 const client = new Client(clientConfig);
 
@@ -39,39 +39,39 @@ const textEventHandler = async (
   const { userId } = event.source;
 
   // Process the text.
-  let reply = '';
+  let reply = "";
 
-  if (text.startsWith('/')) {
-    const [command, ...args] = text.slice(1).split(' ');
+  if (text.startsWith("/")) {
+    const [command, ...args] = text.slice(1).split(" ");
     switch (command) {
-      case 'register':
+      case "register":
         const data = {
           email: args[0],
           name: args[1],
           password: args[2],
           lineId: userId,
-        }
+        };
         // Send the data to register api
-        const registerResponse = await (await register(undefined, data)).json()
-        reply = JSON.stringify(registerResponse)
+        const registerResponse = await (await register(undefined, data)).json();
+        reply = JSON.stringify(registerResponse);
 
         if (reply == undefined) {
-          reply = 'Error'
+          reply = "Error";
         }
 
         break;
       default:
-        reply = 'Mistake use of command';
+        reply = "Mistake use of command";
         break;
     }
   } else {
     const currentUser = await prisma.user.findUnique({
       where: {
         lineId: userId,
-      }
-    })
+      },
+    });
     if (!currentUser) {
-      reply = 'unregistered';
+      reply = "unregistered";
     } else {
       const chatGptResponse = await gptConverter(text);
       if (chatGptResponse == undefined) {
@@ -79,8 +79,8 @@ const textEventHandler = async (
       } else if (chatGptResponse?.error) {
         reply = JSON.stringify(chatGptResponse);
       } else {
-        reply = JSON.stringify(chatGptResponse);// Cannot use object or JSON here, it would cause error when sending to line api
-        
+        reply = JSON.stringify(chatGptResponse); // Cannot use object or JSON here, it would cause error when sending to line api
+
         try {
           const incident = await prisma.incident.create({
             data: {
@@ -88,7 +88,7 @@ const textEventHandler = async (
               action: chatGptResponse?.incident || null,
               time: chatGptResponse?.time || null,
             },
-          })
+          });
           const response: TextMessage = {
             type: "text",
             text: "JSON: " + reply + "incident: " + JSON.stringify(incident),
@@ -97,12 +97,12 @@ const textEventHandler = async (
           // Reply to the user.
           await client.replyMessage(replyToken, response);
         } catch (error) {
-          reply = "something wrong when creating incident."
+          reply = "something wrong when creating incident.";
         }
       }
     }
   }
-  
+
   // Create a new message.
   const response: TextMessage = {
     type: "text",
@@ -115,8 +115,10 @@ const textEventHandler = async (
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === "POST") {
-    try {
-      middleware(middlewareConfig)(req, res, async () => {
+    return res.status(405);
+  }
+  try {
+    await middleware(middlewareConfig)(req, res, async () => {
       const events: WebhookEvent[] = req.body.events;
       if (events !== undefined) {
         const results = await Promise.all(
@@ -142,15 +144,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           status: "success",
         });
       }
-      })
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({
-        status: "error",
-      });
-    }
-  } else {
-    return res.status(405);
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      status: "error",
+    });
   }
 };
 

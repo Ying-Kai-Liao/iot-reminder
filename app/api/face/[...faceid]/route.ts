@@ -30,7 +30,7 @@ export async function GET(
         console.log("userId: " + userId);
         if (userId !== ''){
             const inicidents: Incident[] = await getIncidentByUserId(userId);
-            response = inicidents.map(incident => "事件：" + JSON.stringify(incident.action) + "\n" + JSON.stringify(incident.time)).join("\n\n")
+            response = inicidents.map(incident => "事件：" + JSON.stringify(incident.action) + "\n" + incident.time.toTimeString()).join("\n\n")
         }
     }
 
@@ -40,7 +40,7 @@ export async function GET(
         }
     })
     
-    if (!currentUser) {
+    if (!currentUser?.lineId) {
         return NextResponse.json({
             status: 'no',
             message: 'no good',
