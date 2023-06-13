@@ -123,6 +123,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       if (!events) {
         return res.status(200).json({
           status: "success",
+          text: "no events"
         });
       }
 
