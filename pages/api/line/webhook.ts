@@ -65,15 +65,18 @@ const textEventHandler = async (
         break;
     }
   } else {
+
     const currentUser = await prisma.user.findUnique({
       where: {
         lineId: userId,
       },
     });
+
     if (!currentUser) {
       reply = "unregistered";
     } else {
       const chatGptResponse = await gptConverter(text);
+
       if (chatGptResponse == undefined) {
         reply = "Sorry, I can't understand you.";
       } else if (chatGptResponse?.error) {
@@ -115,6 +118,7 @@ const textEventHandler = async (
   await client.replyMessage(replyToken, response);
 };
 
+// Function to handle POST request
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method !== "POST") {
     return res.status(405).end();
@@ -133,6 +137,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         events.map((event: WebhookEvent) =>
           textEventHandler(event).catch((error) => {
             console.log(error);
+            throw new Error('Text Event Handler Error' + JSON.stringify(error));
           })
         )
       );
