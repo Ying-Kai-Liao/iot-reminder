@@ -3,6 +3,7 @@ import {
   OpenAIApi,
   ListModelsResponse,
 } from "openai";
+import { getCurrentDate } from "@/app/actions/getCurrentDate";
 
 interface Incident {
     status:  string;
@@ -26,7 +27,7 @@ const configuration = new Configuration({
 
 const openai = new OpenAIApi(configuration);
 
-const current = new Date();
+const current = getCurrentDate();
 const JSON_PROMPT = 
     `
         You will function as a JSON converter.
