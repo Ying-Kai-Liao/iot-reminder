@@ -22,7 +22,7 @@ export async function GET(
                 userId = '64807b117dfbadacd3cc2328'
                 break
             case 1:
-                userId = '64807b73dd3e08f6b29a7481'
+                userId = '6489316d675f07b32c4192a1'
                 break
             default:
                 break
@@ -43,12 +43,12 @@ export async function GET(
     if (!currentUser?.lineId) {
         return NextResponse.json({
             status: 'no',
-            message: 'no good',
+            message: 'not current user',
         })
     }
 
     const data = JSON.stringify({
-        "to": [currentUser?.lineId],
+        "to": currentUser?.lineId,
         "messages": [
           {
             "type": "text",
@@ -58,7 +58,7 @@ export async function GET(
     });
     console.log("response: " + response);
 
-    const res = response == "" ? 'Nothing' : await fetch('https://api.line.me/v2/bot/message/broadcast', {
+    const res = response == "" ? 'Nothing' : await fetch('https://api.line.me/v2/bot/message/push', {
         method: 'POST',
         cache: 'no-cache',
         headers: {
@@ -68,7 +68,7 @@ export async function GET(
         body: data,
         redirect: 'follow',
       })
-      .catch(error => console.log('error', error));
+      .catch(error => console.log('error: ', error));
 
     return NextResponse.json({
         status: 'ok',
