@@ -1,0 +1,1 @@
+//some incident reusable function

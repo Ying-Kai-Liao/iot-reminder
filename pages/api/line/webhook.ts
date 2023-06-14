@@ -1,4 +1,4 @@
-import prisma from "@/app/libs/prismadb"
+import prisma from "@/app/libs/prismadb";
 import {
   ClientConfig,
   Client,
@@ -18,9 +18,9 @@ const clientConfig: ClientConfig = {
 };
 
 const middlewareConfig: MiddlewareConfig = {
-    channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN,
-    channelSecret: process.env.LINE_CHANNEL_SECRET || '',
-  };
+  channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN,
+  channelSecret: process.env.LINE_CHANNEL_SECRET || "",
+};
 
 const client = new Client(clientConfig);
 
@@ -39,100 +39,119 @@ const textEventHandler = async (
   const { userId } = event.source;
 
   // Process the text.
-  let reply = '';
+  let reply = "";
 
-  if (text.startsWith('/')) {
-    const [command, ...args] = text.slice(1).split(' ');
+  if (text.startsWith("/")) {
+    const [command, ...args] = text.slice(1).split(" ");
     switch (command) {
-      case 'register':
+      case "register":
         const data = {
           email: args[0],
           name: args[1],
           password: args[2],
-          lineId: userId
-        }
+          lineId: userId,
+        };
         // Send the data to register api
-        const registerResponse = await (await register(undefined, data)).json()
-        reply = JSON.stringify(registerResponse)
+        const registerResponse = await (await register(undefined, data)).json();
+        reply = JSON.stringify(registerResponse);
 
         if (reply == undefined) {
-          reply = 'Error'
+          reply = "Error";
         }
 
         break;
       default:
-        reply = 'Mistake use of command';
+        reply = "Mistake use of command";
         break;
     }
   } else {
+
     const currentUser = await prisma.user.findUnique({
       where: {
         lineId: userId,
-      }
-    })
+      },
+    });
+
     if (!currentUser) {
-      reply = 'not registered'
+      reply = "unregistered";
     } else {
       const chatGptResponse = await gptConverter(text);
+
       if (chatGptResponse == undefined) {
         reply = "Sorry, I can't understand you.";
       } else if (chatGptResponse?.error) {
         reply = JSON.stringify(chatGptResponse);
       } else {
-        reply = JSON.stringify(chatGptResponse);// Cannot use object or JSON here, it would cause error when sending to line api
-        console.log(chatGptResponse?.time)
+        reply = JSON.stringify(chatGptResponse); // Cannot use object or JSON here, it would cause error when sending to line api
+
+        try {
+          const incident = await prisma.incident.create({
+            data: {
+              userId: currentUser.id,
+              action: chatGptResponse?.incident || null,
+              time: chatGptResponse?.time || null,
+            },
+          });
+          if (incident) {
+            const response: TextMessage = {
+              type: "text",
+              text: "JSON: " + reply + "incident: " + JSON.stringify(incident),
+            };
+
+            // Reply to the user.
+            await client.replyMessage(replyToken, response);
+          }
+        } catch (error) {
+          reply = "something wrong when creating incident.";
+        }
       }
     }
   }
-  
+
   // Create a new message.
   const response: TextMessage = {
     type: "text",
-    text: reply,
+    text: "JSON: " + reply,
   };
 
   // Reply to the user.
   await client.replyMessage(replyToken, response);
 };
 
+// Function to handle POST request
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  if (req.method === "POST") {
-    try {
-      middleware(middlewareConfig)(req, res, async () => {
+  if (req.method !== "POST") {
+    return res.status(405).end();
+  }
+  try {
+    await middleware(middlewareConfig)(req, res, async () => {
       const events: WebhookEvent[] = req.body.events;
-      if (events !== undefined) {
-        const results = await Promise.all(
-          events.map(async (event: WebhookEvent) => {
-            try {
-              await textEventHandler(event);
-            } catch (error: unknown) {
-              if (error instanceof Error) {
-                console.error(error);
-              }
-              return res.status(500).json({
-                status: "error",
-              });
-            }
-          })
-        );
+      if (!events) {
         return res.status(200).json({
           status: "success",
-          results,
-        });
-      } else {
-        return res.status(200).json({
-          status: "success",
+          text: "no events",
         });
       }
-      })
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({
-        status: "error",
+
+      const results = await Promise.all(
+        events.map((event: WebhookEvent) =>
+          textEventHandler(event).catch((error) => {
+            console.log(error);
+            throw new Error('Text Event Handler Error' + (error));
+          })
+        )
+      );
+
+      return res.status(200).json({
+        status: "success",
+        results,
       });
-    }
-  } else {
-    return res.status(405);
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      status: "error",
+    });
   }
 };
 

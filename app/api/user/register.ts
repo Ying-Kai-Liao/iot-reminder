@@ -6,7 +6,7 @@ import prisma from "@/app/libs/prismadb";
 export async function register(request?: Request, data?: any) {
   try {
     const body = (await request?.json()) || data;
-    const { email, name, password } = body;
+    const { email, name, password, lineId } = body;
 
     if (!email || !name || !password) {
       console.log("Missing fields");
@@ -21,6 +21,7 @@ export async function register(request?: Request, data?: any) {
         email,
         name,
         hashedPassword,
+        lineId
       },
     });
     console.log(user);

@@ -1,5 +1,6 @@
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "./getCurrentUser";
+import { getCurrentDate } from "./getCurrentDate";
 
 export default async function getIncidentByUserId ( userId?: string , time?: string ) {
     try {
@@ -7,7 +8,8 @@ export default async function getIncidentByUserId ( userId?: string , time?: str
         const userid = userId ? userId : currentUser?.id;
         if (!userid) throw new Error("No user provided");
 
-        const date = time ? new Date(time) : new Date();
+        const currentDate = getCurrentDate();
+        const date = time ? new Date(time) : currentDate;
         date.setHours(0,0,0,0);
 
         const nextDate = new Date(date);
