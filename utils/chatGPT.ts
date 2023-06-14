@@ -18,8 +18,6 @@ interface Error {
     msg: string;
 }
 
-type IncidentOrError = Incident | Error;
-
 const configuration = new Configuration({
   organization: process.env.OPENAI_ORGANIZATION_ID,
   apiKey: process.env.OPENAI_API_KEY,
@@ -28,6 +26,7 @@ const configuration = new Configuration({
 const openai = new OpenAIApi(configuration);
 
 const current = getCurrentDate();
+console.log(current.toISOString())
 const JSON_PROMPT = 
     `
         You will function as a JSON converter.
@@ -36,11 +35,11 @@ const JSON_PROMPT =
         Do not add any extra characters to the output that would make your output invalid JSON
         The format of target JSON is { status: "200", "time": DateTime, "incident": String, "objects": String[] } 
         Notice that DateTime is the specific type of time in prisma.
-        The current DateTime is ${current}. Please answer any questions like today or next Wednesday in consider of the currrent DateTime.
-        Please strictly follow the format above.
+        The current DateTime is "${current}" and the timezone here is Taiwan (UTC + 8). Please answer any questions like today or next Wednesday in consider of the currrent DateTime.
+        Please strictly follow the format above. Please strictly follw the time format like this 2023-06-14T18:00:00.000+00:00.
         time is the time of the input; incident is the simple description of the mentioned event; objects is the objects that mentioned to be bring in the event and it is optional.
         You are assisting user to tell you the data you need to form expected JSON. if user isn't giving information or not giving enough information like "I want to go shopping 5/3 or 5/5" You will output error message.
-        If user is providing time like morning refers to 9:00am in default; noon refers to 12:00pm in default; afternoon refers to 3:00pm in default; evening refers to 6:00pm in default; night refers to 9:00pm in default;
+        If user is providing time like morning refers to 9:00am in default; noon refers to 12:00pm in default; afternoon refers to 3:00pm in default; evening refers to 6:00pm in default; night/tonight refers to 9:00pm in default;
         If user is missing time any of time or incident must return error. For example, when userInput is "I want to have dinner", there's no date in the information.
         Again!! You must reply in the target JSON or Error.
 
