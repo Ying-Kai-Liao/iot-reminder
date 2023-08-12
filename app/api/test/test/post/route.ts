@@ -22,3 +22,10 @@ export async function POST(request: Request) {
         });
     }
 }
+
+export async function GET(request: Request) {
+    return new Response('Please use POST', {
+        status: 405,
+        headers: { 'Content-Type': 'text/plain' }
+    });
+}
