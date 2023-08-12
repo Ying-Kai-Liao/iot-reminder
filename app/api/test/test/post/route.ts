@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 export async function POST(request: Request) {
     try {
         const requestBody = await request.json();
-        console.log(requestBody);
+        console.log(JSON.stringify(requestBody, null, 2)); // Logging with formatting
 
         return new Response(JSON.stringify({
             status: 'ok',
